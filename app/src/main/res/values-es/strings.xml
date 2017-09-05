@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">URL inspector</string>
+    <string name="clean_all_params">Limpiar todos los parámetros</string>
+    <string name="clean_utm_params">Limpiar parámetros UTM</string>
+    <string name="open_link">Abrir link</string>
+    <string name="the_url_will_appear_here">La URL compartida aparecerá aquí. Comparte un link desde otra app y elige URL Inspector para abrirlo.</string>
+</resources>

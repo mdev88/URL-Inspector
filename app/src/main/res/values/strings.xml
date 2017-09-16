@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">URL inspector</string>
-    <string name="clean_utm_params">Clean UTM params</string>
     <string name="open_link">Open link</string>
-    <string name="clean_all_params">Clean all params</string>
-    <string name="the_url_will_appear_here">The shared URL will appear here. Go share some URL and select URL Inspector to open it.</string>
+    <string name="clean_all_params">Clean params</string>
+    <string name="the_url_will_appear_here">The inspected URL will appear here. Share some URL and select \"URL Inspector\" to open it.\n\nLauncher icon credit: Freepik.com</string>
+    <string name="empty_string">Cannot open an empty URL</string>
 </resources>

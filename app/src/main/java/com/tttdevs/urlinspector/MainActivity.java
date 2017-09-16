@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,7 +15,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     TextView txtUrl;
-    Button btnCleanTrack, btnCleanAll, btnOpen;
+    Button btnCleanParams, btnOpen;
     String mUrl = "";
 
     @Override
@@ -23,39 +23,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtUrl = (TextView) findViewById(R.id.txtUrl);
-
-        btnCleanTrack = (Button) findViewById(R.id.btnCleanTrack);
-        btnCleanTrack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUrl = mUrl.replaceAll("utm_[\\S]+&?","");
-                txtUrl.setText(mUrl);
-            }
-        });
-
-        btnCleanAll = (Button) findViewById(R.id.btnCleanAll);
-        btnCleanAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUrl = mUrl.split("\\?")[0].split("#")[0];
-                txtUrl.setText(mUrl);
-            }
-        });
-
-        btnOpen = (Button) findViewById(R.id.btnOpen);
-        btnOpen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(Intent.ACTION_VIEW,Uri.parse(String.valueOf(txtUrl.getText())));
-                startActivity(intent);
-            }
-        });
-
+        initUIElements();
 
         Intent intent = getIntent();
-        Log.d("TEST", intent.toString());
-
         String action = intent.getAction();
 
         if (action.equalsIgnoreCase(Intent.ACTION_SEND) && intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -67,8 +37,11 @@ public class MainActivity extends AppCompatActivity {
                 String path = u.getPath();
                 String query = u.getQuery();
 
-                mUrl = protocol + "://" + host + path;
-                if (query!=null) mUrl += "?"+query;
+                mUrl = protocol + "://" + host;
+                if (path != null)  mUrl += path;
+
+                // TODO: Improve cleaning of utm params
+                if (query != null) mUrl += "?"+query.replaceAll("utm_[\\S]+&?", "");;
 
                 txtUrl.setText(mUrl);
             } catch (MalformedURLException e) {
@@ -78,10 +51,49 @@ public class MainActivity extends AppCompatActivity {
 
         if (action.equalsIgnoreCase(Intent.ACTION_VIEW)) {
             Uri data = intent.getData();
-            mUrl = data.getScheme()+"://"+data.getHost()+"/"+data.getPath()+data.getQuery();
-            txtUrl.setText(mUrl);  // .replaceAll("utm_[\\S]+&?","")
-        }
+            String host = data.getHost();
+            String path = data.getPath();
+            String query = data.getQuery();
 
+            mUrl = data.getScheme()+"://"+host;
+            if (path != null) mUrl += "/"+path;
+
+            // TODO: Improve cleaning of utm params
+            if (query != null) mUrl += query.replaceAll("utm_[\\S]+&?", "");;
+
+            txtUrl.setText(mUrl);
+        }
     }
 
+    /*
+     * Initializes UI elements
+     */
+    private void initUIElements() {
+        txtUrl = (TextView) findViewById(R.id.txtUrl);
+
+        // Erases everything before a ?
+        btnCleanParams = (Button) findViewById(R.id.btnCleanParams);
+        btnCleanParams.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mUrl = mUrl.split("\\?")[0].split("#")[0];
+                txtUrl.setText(mUrl);
+            }
+        });
+
+        // Opens the displayed link with an external app
+        btnOpen = (Button) findViewById(R.id.btnOpen);
+        btnOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Validate URL format
+                if (!mUrl.equals("")) {
+                    Intent intent= new Intent(Intent.ACTION_VIEW,Uri.parse(String.valueOf(txtUrl.getText())));
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.empty_string, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 }

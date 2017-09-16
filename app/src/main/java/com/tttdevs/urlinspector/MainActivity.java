@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             String query = data.getQuery();
 
             mUrl = data.getScheme()+"://"+host;
-            if (path != null) mUrl += "/"+path;
+            if (path != null) mUrl += path;
 
             // TODO: Improve cleaning of utm params
             if (query != null) mUrl += query.replaceAll("utm_[\\S]+&?", "");;
